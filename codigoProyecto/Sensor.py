@@ -1,4 +1,11 @@
 class Sensor:
+
+    muestra = {
+        'tipo': '',
+        'valor': '',
+        'tiempo': ''
+    }
+
     def __init__(self, parametro1, parametro2):
         self.tipo: str = parametro1
         self.configFile: str = parametro2
@@ -30,3 +37,5 @@ class Sensor:
 
                 # Hacer algo con los números (aquí simplemente los imprimo)
                 print(numeros)
+    
+

@@ -23,7 +23,7 @@ class SensorHumo(Sensor):
         socket.connect("tcp://localhost:5555")
 
         socket.send_string("Alerta: Sistema de Calidad")
-
+        
         response = socket.recv_string()
         print(f"Sensor humo: recibe '{response}'del sistema de calidad")
 
