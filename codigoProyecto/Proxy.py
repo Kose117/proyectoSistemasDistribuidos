@@ -14,14 +14,20 @@ class Proxy:
 
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
-        socket.connect("tcp://*:5555")
+        #socket.connect("tcp://*:5555")
+        try:
+            while True:
+                datos = socket.recv_pyobj()
+                print("Muestra recibida en el Proxy:", datos)
+                self.enviarDatosServidor(datos)
+                print(datos)
+        except zmq.ZMQError as e:
+            print(f"Error al recibir la muestra: {e}")
+        finally:
+            socket.close()
+            context.term()
 
-        while True :
-            datos = socket.recv_pyobj()
-            self.enviarDatosServidor(datos)
-            print(datos)
-            
-             
+                    
     def enviarDatosServidor(self, datos):
 
         print("Enviando datos servidor")

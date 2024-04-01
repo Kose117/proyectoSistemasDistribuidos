@@ -20,9 +20,14 @@ class SensorHumedad(Sensor):
     def enviarMuestraProxy(self):
         context = zmq.Context()
         socket = context.socket(zmq.PUSH)
-        socket.bind("tcp://localhost:5555")
+        #socket.bind("tcp://localhost:5555")
+        socket.connect("tcp://localhost:5555")
 
-        socket.send_pyobj(self.muestra)
-
-        socket.close()
-        context.term()
+        try:
+            socket.send_pyobj(self.muestra)
+            print("Muestra enviada al Proxy.")
+        except zmq.ZMQError as e:
+            print(f"Error al enviar la muestra: {e}")
+        finally:
+            socket.close()
+            context.term()
