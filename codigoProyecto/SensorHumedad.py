@@ -21,7 +21,7 @@ class SensorHumedad(Sensor):
         context = zmq.Context()
         socket = context.socket(zmq.PUSH)
         #socket.bind("tcp://localhost:5555")
-        socket.connect("tcp://localhost:5555")
+        socket.connect("tcp://localhost:5556")
 
         try:
             socket.send_pyobj(self.muestra)

@@ -9,3 +9,8 @@ class SensorTemperatura(Sensor):
     def tomarMuestra(self):
         sleep(6)
         print("Tomando muestra de temperatura")
+        self.muestra['tipo'] = "temperatura"
+        self.muestra['valor'] = "19.4"
+        self.muestra['hora'] = "2:35"
+
+        self.enviarMuestraProxy()

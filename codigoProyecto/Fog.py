@@ -1,21 +1,23 @@
+from Proxy import Proxy
 from ServidorLocal import ServidorLocal
 from SistemaCalidad import SistemaCalidad
-from Proxy import Proxy
+
 class Fog:
 
-    def crearProxy(self):
-        self.proxy = Proxy()
-
-    def crearServidor(self):
-         self.servidor_local = ServidorLocal()
-    
-    def crearSistemaCalidad(self):
-        self.sistema_calidad = SistemaCalidad()
+    def crearProxy():
+        print("Creando proxy")
+        return Proxy()
+    def crearServidor():
+        print("Creando servidor")
+        return ServidorLocal()
+       # return ServidorLocal()
+    def crearSistemaCalidad():
+        print("Creando sistema de calidad")
+        return SistemaCalidad()
     
     if __name__ == "__main__":
-       crearProxy()
-       crearServidor()
-
-
-
-
+        print("Creando fog")
+        proxy = crearProxy()
+        crearServidor()
+        
+        proxy.recibirMuestras()
