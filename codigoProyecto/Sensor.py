@@ -37,5 +37,8 @@ class Sensor:
 
                 # Hacer algo con los números (aquí simplemente los imprimo)
                 print(numeros)
+                self.pCorrecto = numeros[0]
+                self.pFueraRango = numeros[1]
+                self.pError = numeros[2]
     
 
