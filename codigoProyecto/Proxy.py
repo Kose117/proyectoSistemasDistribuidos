@@ -1,14 +1,13 @@
 import zmq
 
+
 class Proxy:
-    
-    def __init__ (self):
+
+    def __init__(self):
         print("Creando proxy")
 
     def recibirAlertas(self):
         print("Recibiendo alertas")
-    
-   
 
     def recibirMuestras(self):
 
@@ -27,17 +26,12 @@ class Proxy:
             socket.close()
             context.term()
 
-                    
     def enviarDatosServidor(self, datos):
 
         print("Enviando datos servidor")
-    
+
     def validarDatos(self):
         print("Validando datos")
 
-    
-
     def enviarMensajesCloud(self):
         print("Enviando mensajes cloud")
-        
-
