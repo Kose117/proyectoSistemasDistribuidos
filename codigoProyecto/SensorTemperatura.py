@@ -1,30 +1,28 @@
 import random
+import threading
 import zmq
 from Sensor import Sensor
 from time import sleep
 import datetime
+from threading import Thread
 
 
 class SensorTemperatura(Sensor):
     def __init__(self, parametro1, parametro2):
+        self.inicializado = threading.Event()
         super().__init__(parametro1, parametro2)
         self.rango_normal = (11,29.4)
-        
 
-    # def tomarMuestra(self):
-    #     sleep(6)
-    #     print("Tomando muestra de temperatura")
-    #     self.muestra['tipo'] = "temperatura"
-    #     self.muestra['valor'] = "19.4"
-    #     self.muestra['hora'] = "2:35"
+        self.inicializado.set()
 
-    #     self.enviarMuestraProxy()
-  
-
-   
-        
-
+    def run(self):
+        while True:
+            self.tomarMuestra()
+            sleep(6)  
+            
+    
     def tomarMuestra(self):
+        self.inicializado.wait()
         while True:
             probabilidades = {
             "correctos": self.pCorrecto,

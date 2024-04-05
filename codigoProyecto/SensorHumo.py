@@ -4,12 +4,20 @@ from Sensor import Sensor
 from time import sleep
 from Aspersor import Aspersor
 import zmq
+from threading import Thread
 
 
-class SensorHumo(Sensor):
+class SensorHumo(Sensor, Thread):
     def __init__(self, parametro1, parametro2):
-        super().__init__(parametro1, parametro2)
+        Sensor.__init__(self, parametro1, parametro2)
+        Thread.__init__(self) 
         self.valores_booleanos = (True, False, "Error")
+
+    def run(self):
+        while True:
+            self.tomarMuestra()
+            sleep(3)  
+
 
     def tomarMuestra(self, aspersor):
         while True:

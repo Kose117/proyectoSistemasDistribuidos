@@ -1,17 +1,29 @@
 import datetime
 import random
+import threading
 from Sensor import Sensor
 from time import sleep
 import zmq
+from threading import Thread
 
-
-class SensorHumedad(Sensor):
+class SensorHumedad(Sensor, Thread):  
     def __init__(self, parametro1, parametro2):
-        super().__init__(parametro1, parametro2)
-        self.rango_normal = (0.7,1)
+        self.inicializado = threading.Event()
+        Sensor.__init__(self, parametro1, parametro2)
+        Thread.__init__(self) 
+        self.rango_normal = (0.7, 1)
+        self.inicializado.set()
+        
+
+    def run(self):
+        while True:
+            self.tomarMuestra()
+            sleep(5)  
+    
         
 
     def tomarMuestra(self):
+        self.inicializado.wait()
         while True:
             probabilidades = {
             "correctos": self.pCorrecto,
