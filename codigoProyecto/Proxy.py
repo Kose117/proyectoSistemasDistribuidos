@@ -13,7 +13,7 @@ class Proxy:
 
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
-        socket.bind("tcp://*:5556")
+        socket.bind("tcp://10.43.103.83:5556")
         try:
             while True:
                 datos = socket.recv_pyobj()
