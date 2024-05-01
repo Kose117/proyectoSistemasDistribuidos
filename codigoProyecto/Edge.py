@@ -17,6 +17,7 @@ class Edge:
 
         # Crear hilos para cada sensor y sistema de calidad
         hiloSC = threading.Thread(target=sistemaCalidad.EsperarAlerta)
+        
         hiloHumo = threading.Thread(target=lambda: sensorHumo.tomarMuestra(aspersor))
         hiloTemperatura = threading.Thread(target=sensorTemperatura.tomarMuestra)
         hiloHumedad = threading.Thread(target=sensorHumedad.tomarMuestra)
@@ -41,3 +42,4 @@ class Edge:
     if __name__ == "__main__":
         aspersor = CrearAspersor()
         CrearSensores(aspersor)
+
