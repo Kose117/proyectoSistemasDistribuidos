@@ -18,7 +18,8 @@ class SensorHumedad(Sensor, Thread):
     def run(self):
         while True:
             self.tomarMuestra()
-           # sleep(5)  
+           # sleep(5) 
+            sleep(20) 
     
         
 
@@ -43,7 +44,8 @@ class SensorHumedad(Sensor, Thread):
             self.muestra['hora'] = str(datetime.datetime.now())
             
             self.enviarMuestraProxy()
-            sleep(5)
+            #sleep(5)
+            sleep(20)
 
     
     def enviarMuestraProxy(self):

@@ -40,7 +40,8 @@ class SensorHumo(Sensor, Thread):
             if self.muestra['valor'] == True:
                 self.enviarMensajeAspersor(aspersor)
                 self.generarSistemaCalidad()
-            sleep(3)
+            #sleep(3)
+            sleep(20)
 
     def generarSistemaCalidad(self):
         context = zmq.Context()
