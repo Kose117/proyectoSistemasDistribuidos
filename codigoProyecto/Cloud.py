@@ -1,3 +1,4 @@
+from datetime import time
 import zmq
 from Alerta import Alerta
 
@@ -7,6 +8,7 @@ def __init__(self):
         self.socket.bind("tcp://*:5555")  
         self.socket.setsockopt_string(zmq.SUBSCRIBE, "")  
         self.sumatoriahumedad = 0
+        self.minimo_humedad = 70
 
 def receive_alerts(self):
     while True:
@@ -29,7 +31,14 @@ def recibirInfoProxy(self):
         
         socket.send_string("Datos recibidos impresos")
         
-
+def calcularHumedadMensual():
+     while True:
+            time.sleep(20)
+            valorCalculado = 0
+            #hace falta que se calcule todo, NO ENTIENDO LA PERRA FORMULA. Sophia tampoco la entendio, asi que es a la de dios
+            if valorCalculado < self.minimo_humedad:
+                alerta=Alerta("Humedad", "Alta", "El valor de humedad es inferior al minimo permitido")
+                self.write_to_file(alerta)
 
 if __name__ == "__main__":
     cloud = Cloud()    

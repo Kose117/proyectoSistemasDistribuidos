@@ -5,6 +5,7 @@ from time import sleep
 from Aspersor import Aspersor
 import zmq
 from threading import Thread
+from Alerta import Alerta
 
 
 class SensorHumo(Sensor, Thread):
@@ -54,10 +55,11 @@ class SensorHumo(Sensor, Thread):
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://localhost:5555")
 
-        socket.send_string("Alerta: Sistema de Calidad")
+        alerta = Alerta(origen_sensor=self.__class__.__name__, tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.datetime.now())
+        socket.send_pyobj(alerta)
 
         response = socket.recv_string()
-        print(f"Sensor humo: recibe '{response}'del sistema de calidad")
+        print(f"Sensor humo: recibe '{response}' del sistema de calidad")
 
         socket.close()
         context.term()
