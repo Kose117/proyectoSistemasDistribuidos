@@ -13,10 +13,8 @@ class SistemaCalidad:
         while True :
             message = socket.recv_string()
             self.ImprimirAlerta(message)
-           
             socket.send_string("Alerta impresa en pantalla")
 
     def ImprimirAlerta(self, message):
-         print(f"Sistema de Calidad: recibe '{message}'")
+        print(f"Sistema de Calidad: recibe '{message}'")
     
-   
