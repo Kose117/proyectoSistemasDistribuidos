@@ -35,4 +35,5 @@ class Proxy:
         print("Validando datos")
 
     def enviarMensajesCloud(self):
+        
         print("Enviando mensajes cloud")
