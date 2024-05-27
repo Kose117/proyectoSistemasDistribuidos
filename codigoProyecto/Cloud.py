@@ -1,3 +1,3 @@
-class Edge:
+class Cloud:
     def funcion1():
         pass
