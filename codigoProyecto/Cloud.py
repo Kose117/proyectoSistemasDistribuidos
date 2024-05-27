@@ -1,6 +1,5 @@
-import re
 import zmq
-from Muestra  import Muestra 
+from Alerta import Alerta
 
 def __init__(self):
         self.context = zmq.Context()
@@ -9,15 +8,15 @@ def __init__(self):
         self.socket.setsockopt_string(zmq.SUBSCRIBE, "")  
         self.sumatoriahumedad = 0
 
-def receive_alerts(self, muestra_data):
-        muestra = Muestra(**muestra_data)  
-        if muestra.tipo == "alerta":
-            self.write_to_file(muestra)
+def receive_alerts(self):
+    while True:
+        alerta_data = self.socket.recv_json()  
+        alerta = Alerta(**alerta_data)  
+        self.write_to_file(alerta)
 
-def write_to_file(self, muestra):
-        with open("Alertas.txt", "a") as file:
-            file.write(f"Fecha: {muestra.fecha}, Origen del sensor: {muestra.origen_sensor}, Tipo de muestra: {muestra.tipo}\n")
-
+def write_to_file(self, alerta):
+    with open("Alertas.txt", "a") as file:
+        file.write(f"Fecha: {alerta.fecha}, Origen del sensor: {alerta.origen_sensor}, Tipo de alerta: {alerta.tipo_alerta}\n")
 
 def recibirInfoProxy(self):
     context = zmq.Context()
@@ -27,9 +26,6 @@ def recibirInfoProxy(self):
     while True :
         message = socket.recv_pyobj()
         print(f"{message}")
-        
-        if re.search("alerta", message['tipo']):
-            self.receive_alerts(message)
         
         socket.send_string("Datos recibidos impresos")
         
