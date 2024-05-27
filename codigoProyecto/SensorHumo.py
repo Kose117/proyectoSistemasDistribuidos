@@ -8,10 +8,11 @@ from threading import Thread
 
 
 class SensorHumo(Sensor, Thread):
-    def __init__(self, parametro1, parametro2):
+    def __init__(self, parametro1, parametro2, aspersor):
         Sensor.__init__(self, parametro1, parametro2)
         Thread.__init__(self) 
         self.valores_booleanos = (True, False, "Error")
+        self.aspersor = aspersor
 
     def run(self):
         while True:
@@ -19,29 +20,34 @@ class SensorHumo(Sensor, Thread):
             #sleep(3)  
 
 
-    def tomarMuestra(self, aspersor):
+    def tomarMuestra(self):
         while True:
             probabilidades = {
-                "humo_detectado": self.pCorrecto,
+                "correcto": self.pCorrecto,
                 "error": self.pError,
             }
             eleccion = random.choices(
                 list(probabilidades.keys()), probabilidades.values())[0]
 
-            if eleccion == "humo_detectado":
+            if eleccion == "correcto":
                 self.muestra['valor'] = random.choice([True, False])
             else:
                 self.muestra['valor'] = "error"
 
-            self.muestra['tipo'] = "alerta humo"
-            self.muestra['hora'] = str(datetime.datetime.now())
 
-            self.enviarAlertaProxy()
             if self.muestra['valor'] == True:
-                self.enviarMensajeAspersor(aspersor)
+                self.muestra['tipo'] = "alerta humo"
+                self.muestra['hora'] = str(datetime.datetime.now())
+                self.enviarMensajeAspersor()
                 self.generarSistemaCalidad()
-            #sleep(3)
-            sleep(20)
+                
+            else:
+                self.muestra['tipo'] = "Muestra humo"
+                self.muestra['hora'] = str(datetime.datetime.now())
+                
+            
+            self.enviarMuestraProxy()  
+            sleep(3)
 
     def generarSistemaCalidad(self):
         context = zmq.Context()
@@ -56,11 +62,11 @@ class SensorHumo(Sensor, Thread):
         socket.close()
         context.term()
 
-    def enviarMensajeAspersor(self, aspersor):
-        aspersor.activarAspersor()
+    def enviarMensajeAspersor(self):
+        self.aspersor.activarAspersor()
         # Código para el método enviarMensajeAspersor
 
-    def enviarAlertaProxy(self):
+    def enviarMuestraProxy(self):
         context = zmq.Context()
         socket = context.socket(zmq.PUSH)
         # socket.bind("tcp://localhost:5555")

@@ -1,3 +1,4 @@
+import re
 import zmq
 
 
@@ -29,6 +30,9 @@ class Proxy:
                 print("Muestra recibida en el Proxy:", datos)
                 self.enviarDatosServidor(datos)
                 print(datos)
+                if(self.validarDatos(datos)):
+                    self.enviarMensajesCloud(datos)
+                
         except zmq.ZMQError as e:
             print(f"Error al recibir la muestra: {e}")
         finally:
@@ -50,22 +54,38 @@ class Proxy:
         context.term()
 
        
+    def validarDatos(self, datos):    
 
-    def validarDatos(self):
         print("Validando datos")
+        if(re.search("humo", datos['tipo'])):
+            if datos['valor'] == True or datos['valor'] == False:
+                print("Datos correctos")
+                return True
+            
+            print("Datos INcorrectos")
+            return False
+        elif(re.search("temperatura", datos['tipo']) or re.search("humedad", datos['tipo'])):
+            if float(datos['valor']) < 0:
+                print("Datos INcorrectos")
+                return False
+            # Poner condicion en caso de que sea fuera de rango para mandar alerta
+            print("Datos correctos")
+            return True
+        
 
-    def enviarMensajesCloud(self):
-        #ARREGLAR!
+
+    def enviarMensajesCloud(self, datos):
+
         print("Enviando mensajes cloud")
         # Usando Request Reply
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://localhost:5557")
 
-        socket.send_string("Alerta: Sistema de Calidad")
+        socket.send_pyobj(datos)
 
         response = socket.recv_string()
-        print(f"Sensor humo: recibe '{response}'del sistema de calidad")
+        print(f"Proxy: recibe '{response}'de la capa cloud")
 
         socket.close()
         context.term()
