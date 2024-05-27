@@ -1,3 +1,4 @@
+import re
 import zmq
 from Alerta import Alerta
 
@@ -8,7 +9,7 @@ def __init__(self):
         self.socket.setsockopt_string(zmq.SUBSCRIBE, "")  
         self.sumatoriahumedad = 0
 
-def receive_alerts(self):
+def receive_alerts(self, message):
     while True:
         alerta_data = self.socket.recv_json()  
         alerta = Alerta(**alerta_data)  
@@ -26,6 +27,9 @@ def recibirInfoProxy(self):
     while True :
         message = socket.recv_pyobj()
         print(f"{message}")
+        
+        if re.search("alerta", message['tipo']):
+            self.receive_alerts(message)
         
         socket.send_string("Datos recibidos impresos")
         
