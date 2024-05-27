@@ -28,7 +28,6 @@ class Proxy:
             context.term()
 
     def enviarDatosServidor(self, datos):
-
         print("Enviando datos servidor")
 
     def validarDatos(self):

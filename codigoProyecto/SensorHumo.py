@@ -16,7 +16,7 @@ class SensorHumo(Sensor, Thread):
     def run(self):
         while True:
             self.tomarMuestra()
-            sleep(3)  
+            #sleep(3)  
 
 
     def tomarMuestra(self, aspersor):

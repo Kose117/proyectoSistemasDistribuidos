@@ -2,13 +2,14 @@ import zmq
 
 class SistemaCalidad:
 
-    def __init__(self):
+    def __init__(self, puerto):
+        self.PUERTO: str = puerto
         print("Creando sistema de calidad")
     
     def EsperarAlerta(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:5555")
+        socket.bind(f"tcp://*:{self.PUERTO}") #PUERTO = 5555 socket.bind("tcp://*:5555")
 
         while True :
             message = socket.recv_string()

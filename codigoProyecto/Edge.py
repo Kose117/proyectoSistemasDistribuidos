@@ -8,7 +8,7 @@ from SistemaCalidad import SistemaCalidad
 class Edge:
     def CrearSensores(aspersor):
         print("Creando sistema de calidad")
-        sistemaCalidad = SistemaCalidad()
+        sistemaCalidad = SistemaCalidad("5555")
 
         print("Creando sensores")
         sensoresHumo = [SensorHumo(f"humo_{i}", f"config/configFile1.txt") for i in range(10)]

@@ -8,7 +8,7 @@ class ServidorLocal:
     humedades = []
 
     # Límites establecidos para los sensores
-    TEMP_MAX = 29, 4
+    TEMP_MAX = 29.4
 
     def __init__(self):
         print("Creando servidor local")
@@ -26,7 +26,7 @@ class ServidorLocal:
             promedioTemp = sum(temperaturas) / len(temperaturas)
             print(f"Promedio de Temperatura: {promedioTemp} - {timestamp}")
             if promedioTemp > self.TEMP_MAX:
-                self.enviarAlerta("temperatura", promedioTemp, timestamp)
+                self.enviarAlertaSistemaCalidad("temperatura", promedioTemp, timestamp)
             temperaturas = []  # Resetear la lista para el próximo cálculo
 
         if len(humedades) >= 10:
@@ -35,7 +35,18 @@ class ServidorLocal:
             humedades = []  # Resetear la lista para el próximo cálculo
 
     def enviarAlertaSistemaCalidad(tipo, valor, timestamp):
-        pass
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect("tcp://localhost:5555")
+
+        socket.send_string("Alerta: Sistema de Calidad")
+
+        response = socket.recv_string()
+        print(f"Sensor humo: recibe '{response}'del sistema de calidad")
+
+        socket.close()
+        context.term()
+
 
     def enviar_alerta_proxy():
         pass

@@ -18,7 +18,7 @@ class SensorTemperatura(Sensor):
     def run(self):
         while True:
             self.tomarMuestra()
-            sleep(6)  
+            #sleep(6)  
             
     
     def tomarMuestra(self):
