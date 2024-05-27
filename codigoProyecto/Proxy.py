@@ -35,3 +35,16 @@ class Proxy:
 
     def enviarMensajesCloud(self):
         print("Enviando mensajes cloud")
+        # Usando Request Reply
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect("tcp://localhost:5557")
+
+        socket.send_string("Alerta: Sistema de Calidad")
+
+        response = socket.recv_string()
+        print(f"Sensor humo: recibe '{response}'del sistema de calidad")
+
+        socket.close()
+        context.term()
+        
