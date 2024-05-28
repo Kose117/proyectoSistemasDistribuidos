@@ -84,9 +84,12 @@ class Proxy:
         
     def enviarAlerta(self, datos):
         tipo_alerta = f"Alerta: {datos['tipo']} fuera de rango" if float(datos['valor']) < 11 or float(datos['valor']) > 29.4 else "Datos Incorrectos"
-        alerta = Alerta(origen_sensor=datos['sensor'], tipo_alerta=tipo_alerta, fecha=datetime.datetime.now())
+        alerta = Alerta(origen_sensor=datos['tipo'], tipo_alerta=tipo_alerta, fecha=datetime.datetime.now())
         try:
-            self.socket_to_cloud.send_pyobj(alerta)
+            context = zmq.Context()
+            socket = context.socket(zmq.REQ)
+            socket.connect("tcp://localhost:5560")
+            socket.send_pyobj(alerta)
             print("Alerta enviada al Cloud.")
         except zmq.ZMQError as e:
             print(f"Error al enviar la alerta: {e}")
