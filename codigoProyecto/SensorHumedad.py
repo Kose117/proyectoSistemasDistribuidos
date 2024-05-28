@@ -18,7 +18,8 @@ class SensorHumedad(Sensor, Thread):
     def run(self):
         while True:
             self.tomarMuestra()
-            sleep(5)  
+           # sleep(5) 
+            sleep(20) 
     
         
 
@@ -37,13 +38,14 @@ class SensorHumedad(Sensor, Thread):
             elif eleccion == "fuera_rango":
                 self.muestra['valor'] = random.uniform(self.rango_normal[1], self.rango_normal[1] + 5)
             else:
-                self.muestra['valor'] = random.uniform(-5, 0)
+                self.muestra['valor'] = random.uniform(-5, -1)
                 
             self.muestra['tipo'] = "humedad"
             self.muestra['hora'] = str(datetime.datetime.now())
             
             self.enviarMuestraProxy()
-            sleep(5)
+            #sleep(5)
+            sleep(20)
 
     
     def enviarMuestraProxy(self):

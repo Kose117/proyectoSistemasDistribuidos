@@ -18,7 +18,7 @@ class SensorHumo(Sensor, Thread):
     def run(self):
         while True:
             self.tomarMuestra()
-            sleep(3)  
+            #sleep(3)  
 
 
     def tomarMuestra(self):
@@ -37,7 +37,7 @@ class SensorHumo(Sensor, Thread):
 
 
             if self.muestra['valor'] == True:
-                self.muestra['tipo'] = "alerta humo"
+                self.muestra['tipo'] = "alerta humo" #cambiar a alerta humo
                 self.muestra['hora'] = str(datetime.datetime.now())
                 self.enviarMensajeAspersor()
                 self.generarSistemaCalidad()

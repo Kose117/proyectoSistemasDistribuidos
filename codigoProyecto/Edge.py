@@ -11,7 +11,7 @@ class Edge:
 
     def CrearSensores(self):
         print("Creando sistema de calidad")
-        sistemaCalidad = SistemaCalidad()
+        sistemaCalidad = SistemaCalidad("5555")
 
         print("Creando sensores")
         sensoresHumo = [SensorHumo(f"humo_{i}", f"config/configFile1.txt", self.aspersor) for i in range(10)]

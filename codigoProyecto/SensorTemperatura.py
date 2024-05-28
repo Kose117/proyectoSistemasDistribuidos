@@ -18,7 +18,7 @@ class SensorTemperatura(Sensor):
     def run(self):
         while True:
             self.tomarMuestra()
-            sleep(6)  
+            #sleep(6)  
             
     
     def tomarMuestra(self):
@@ -41,7 +41,8 @@ class SensorTemperatura(Sensor):
             self.muestra['tipo'] = "temperatura"
             self.muestra['hora'] = str(datetime.datetime.now())
             self.enviarMuestraProxy()
-            sleep(6)
+            #sleep(6)
+            sleep(20)
 
     # def simular_medicion(self):
     #     valor = self.generar_valor()
