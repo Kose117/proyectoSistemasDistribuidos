@@ -43,7 +43,7 @@ class SensorHumo(Sensor, Thread):
                 self.generarSistemaCalidad()
                 
             else:
-                self.muestra['tipo'] = "Humo"
+                self.muestra['tipo'] = "humo"
                 self.muestra['hora'] = str(datetime.datetime.now())
                 
             

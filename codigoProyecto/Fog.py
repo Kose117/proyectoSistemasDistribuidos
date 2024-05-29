@@ -24,12 +24,15 @@ class Fog:
         hiloProxy = threading.Thread(target= proxy.recibirMuestras)
         hiloServ = threading.Thread(target= servidor.recibirDatos)
         hiloProxyAlerta = threading.Thread(target= proxy.recibirAlertasServidor)
+        hiloProxyProm = threading.Thread(target= proxy.recibirPromedioHumedad)
 
         print("Creando hilos")
         hiloProxy.start()
         hiloServ.start()
         hiloProxyAlerta.start()
+        hiloProxyProm.start()
         
         hiloProxy.join()
         hiloServ.join()
         hiloProxyAlerta.join()
+        hiloProxyProm.join()

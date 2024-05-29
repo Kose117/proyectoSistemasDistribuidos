@@ -1,3 +1,4 @@
+from time import sleep
 import zmq
 import json
 from datetime import datetime
@@ -29,9 +30,12 @@ class ServidorLocal:
                 self.enviarAlertaProxy("temperatura", promedioTemp, timestamp)
             self.temperaturas = []  # Resetear la lista para el próximo cálculo
 
-        if len(self.humedades) >= 10:
+        if len(self.humedades) == 10:
+            sleep(5)
             promedioHumedad = sum(self.humedades) / len(self.humedades)
             print(f"Promedio de Humedad: {promedioHumedad} - {timestamp}")
+            # enviar promedio al proxy
+            self.enviarPromedioHumedad(promedioHumedad)
             self.humedades = []  # Resetear la lista para el próximo cálculo
 
     # def enviarAlertaSistemaCalidad(tipo, valor, timestamp):
@@ -46,7 +50,18 @@ class ServidorLocal:
 
     #     socket.close()
     #     context.term()
+    def enviarPromedioHumedad(self, promedioHumedad):
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect("tcp://localhost:5561")
 
+        socket.send_string(str(promedioHumedad))
+
+        response = socket.recv_string()
+        print(f"Servidor local: recibe '{response}'del proxy")
+
+        socket.close()
+        context.term()
 
     def enviarAlertaProxy(self,tipo, valor, timestamp):
         #crear alerta antes

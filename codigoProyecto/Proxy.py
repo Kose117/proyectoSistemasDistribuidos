@@ -17,7 +17,7 @@ class Proxy:
             alert = socket.recv_pyobj()
             print("Alerta recibida en el Proxy:", alert)
             print(f"Se va a mandar al cloud: {alert}")
-            self.enviarMensajesCloud(alert)
+            self.enviarAlerta(alert)
             socket.send_string("Enviando alerta al cloud")
 
     def recibirMuestras(self):
@@ -82,9 +82,27 @@ class Proxy:
             print("Tipo de datos desconocido")
             return False
         
+    # def enviarAlerta(self, datos):
+    #     tipo_alerta = f"Alerta: {datos['tipo']} fuera de rango" if float(datos['valor']) < 11 or float(datos['valor']) > 29.4 else "Datos Incorrectos"
+    #     alerta = Alerta(origen_sensor=datos['tipo'], tipo_alerta=tipo_alerta, fecha=datetime.datetime.now())
+    #     try:
+    #         context = zmq.Context()
+    #         socket = context.socket(zmq.REQ)
+    #         socket.connect("tcp://localhost:5560")
+    #         socket.send_pyobj(alerta)
+    #         print("Alerta enviada al Cloud.")
+    #     except zmq.ZMQError as e:
+    #         print(f"Error al enviar la alerta: {e}")
+    #     self.enviarMensajesCloud(alerta)
     def enviarAlerta(self, datos):
-        tipo_alerta = f"Alerta: {datos['tipo']} fuera de rango" if float(datos['valor']) < 11 or float(datos['valor']) > 29.4 else "Datos Incorrectos"
+        try:
+            valor = float(datos['valor'])
+            tipo_alerta = f"Alerta: {datos['tipo']} fuera de rango" if valor < 11 or valor > 29.4 else "Datos Correctos"
+        except ValueError:
+            tipo_alerta = "Datos Incorrectos"
+        
         alerta = Alerta(origen_sensor=datos['tipo'], tipo_alerta=tipo_alerta, fecha=datetime.datetime.now())
+        
         try:
             context = zmq.Context()
             socket = context.socket(zmq.REQ)
@@ -93,8 +111,22 @@ class Proxy:
             print("Alerta enviada al Cloud.")
         except zmq.ZMQError as e:
             print(f"Error al enviar la alerta: {e}")
-        self.enviarMensajesCloud(alerta)
-
+        
+       # self.enviarMensajesCloud(alerta)
+    def recibirPromedioHumedad(self):
+        context = zmq.Context()
+        socket = context.socket(zmq.PULL)
+        socket.bind("tcp://*:5561")
+        try:
+            while True:
+                promedioHumedad = socket.recv_string()
+                print("Promedio de humedad recibido en el Proxy:", promedioHumedad)
+                self.enviarMensajesCloud(promedioHumedad)
+        except zmq.ZMQError as e:
+            print(f"Error al recibir el promedio de humedad: {e}")
+        finally:
+            socket.close()
+            context.term()
 
     def enviarMensajesCloud(self, datos):
 
@@ -104,7 +136,10 @@ class Proxy:
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://localhost:5557")
 
-        socket.send_pyobj(datos)
+       # if isinstance(datos, str):
+        socket.send_string(datos)
+        #else:
+           # socket.send_pyobj(datos)
 
         response = socket.recv_string()
         print(f"Proxy: recibe '{response}'de la capa cloud")
