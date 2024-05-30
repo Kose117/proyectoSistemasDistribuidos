@@ -2,6 +2,8 @@ from Proxy import Proxy
 from ServidorLocal import ServidorLocal
 from SistemaCalidad import SistemaCalidad
 import threading
+
+
 class Fog:
 
     def crearProxy(servidor):
@@ -22,12 +24,13 @@ class Fog:
         servidor = crearServidor()
         sistemaCalidad = crearSistemaCalidad()
         proxy = crearProxy(servidor)
-        hiloProxy = threading.Thread(target= proxy.recibirMuestras)
-        hiloSistemaCalidad = threading.Thread(target=sistemaCalidad.EsperarAlerta)
+        hiloProxy = threading.Thread(target=proxy.recibirMuestras)
+        hiloSistemaCalidad = threading.Thread(
+            target=sistemaCalidad.EsperarAlerta)
 
         print("Creando hilos")
         hiloProxy.start()
         hiloSistemaCalidad.start()
-        
+
         hiloProxy.join()
         hiloSistemaCalidad.join()
