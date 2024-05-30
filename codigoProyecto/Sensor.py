@@ -15,6 +15,7 @@ class Sensor:
         self.pCorrecto: float = -1
         self.pFueraRango: float = -1
         self.pError: float = -1
+        self.PUERTO_PROXY = 5556
 
         self.leerArchivo()
 

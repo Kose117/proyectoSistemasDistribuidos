@@ -2,6 +2,7 @@ import datetime
 import re
 import threading
 from time import sleep
+import time
 import zmq
 from Alerta import Alerta
 from datetime import datetime
@@ -10,6 +11,7 @@ from SistemaCalidad import SistemaCalidad
 
 
 class Proxy:
+
     promedio = {
         'tipo': '',
         'valor': ''
@@ -22,6 +24,8 @@ class Proxy:
         self.humedades = []
         # Límites establecidos para los sensores
         self.TEMP_MAX = 29.4
+        self.puedoEnviar = False
+        self.lock = threading.Lock()
 
     def recibirAlertasServidor(self):
         context = zmq.Context()
@@ -36,6 +40,12 @@ class Proxy:
             socket.send_string("Enviando alerta al cloud")
 
     def recibirMuestras(self):
+        while True:
+            if self.puedoEnviar == False:
+                sleep(2)
+            else:
+                break
+
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
         socket.bind("tcp://*:5556")
@@ -88,6 +98,10 @@ class Proxy:
             return False
 
     def enviarAlerta(self, datos):
+        with self.lock:
+            if self.puedoEnviar == False:
+                return
+
         try:
             valor = float(datos['valor'])
             tipo_alerta = f"Alerta: {datos['tipo']} fuera de rango" if valor < 11 or valor > 29.4 else "Datos Correctos"
@@ -135,6 +149,10 @@ class Proxy:
             self.humedades = []  # Resetear la lista para el próximo cálculo
 
     def enviarMensajesCloud(self, datos, tipo):
+        with self.lock:
+            if self.puedoEnviar == False:
+                return
+
         sleep(5)
         print("Enviando promedio cloud")
         # Usando Request Reply
@@ -153,6 +171,9 @@ class Proxy:
         context.term()
 
     def enviarMuestrasCloud(self, datos):
+        with self.lock:
+            if self.puedoEnviar == False:
+                return
 
         print("Enviando muestras cloud")
         context = zmq.Context()
@@ -185,17 +206,18 @@ class Proxy:
         context = zmq.Context()
         sender = context.socket(zmq.REQ)
         sender.connect(
-            f"tcp://localhost:5568")
-        sender.send_string("Hello :)")
-        sender.recv_string()
-
-        receiver = context.socket(zmq.REP)
-        receiver.bind(
-            f"tcp://localhost:5569")
-
+            f"tcp://localhost:5570")
         while True:
-            receiver.recv_string()
-            receiver.send_string("yes still alive")
+            sender.send_string("HI PROXY 2")
+            resp = sender.recv_string()
+            # print(resp)
+            if resp == "True":
+                with self.lock:
+                    self.puedoEnviar = False
+            else:
+                with self.lock:
+                    self.puedoEnviar = True
+            time.sleep(2)
 
 
 def crearServidor():
@@ -205,7 +227,7 @@ def crearServidor():
 
 def crearSistemaCalidad():
     print("Creando sistema de calidad")
-    return SistemaCalidad("5565")
+    return SistemaCalidad("5580")
 
 
 if __name__ == "__main__":
@@ -213,8 +235,8 @@ if __name__ == "__main__":
     proxy = Proxy(servidor)
     sistemaCalidad = crearSistemaCalidad()
 
-    hiloProxy = threading.Thread(target=proxy.recibirMuestras)
     hiloHealth = threading.Thread(target=proxy.health)
+    hiloProxy = threading.Thread(target=proxy.recibirMuestras)
     hiloSistemaCalidad = threading.Thread(target=sistemaCalidad.EsperarAlerta)
 
     hiloProxy.start()
