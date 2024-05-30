@@ -11,15 +11,14 @@ from Alerta import Alerta
 class SensorHumo(Sensor, Thread):
     def __init__(self, parametro1, parametro2, aspersor):
         Sensor.__init__(self, parametro1, parametro2)
-        Thread.__init__(self) 
+        Thread.__init__(self)
         self.valores_booleanos = (True, False, "Error")
-        self.aspersor:Aspersor = aspersor
+        self.aspersor: Aspersor = aspersor
 
     def run(self):
         while True:
             self.tomarMuestra()
-            #sleep(3)  
-
+            # sleep(3)
 
     def tomarMuestra(self):
         while True:
@@ -35,19 +34,17 @@ class SensorHumo(Sensor, Thread):
             else:
                 self.muestra['valor'] = "error"
 
-
             if self.muestra['valor'] == True:
-                self.muestra['tipo'] = "alerta humo" #cambiar a alerta humo
+                self.muestra['tipo'] = "alerta humo"  # cambiar a alerta humo
                 self.muestra['hora'] = str(datetime.datetime.now())
                 self.enviarMensajeAspersor()
                 self.generarSistemaCalidad()
-                
+
             else:
                 self.muestra['tipo'] = "humo"
                 self.muestra['hora'] = str(datetime.datetime.now())
-                
-            
-            self.enviarMuestraProxy()  
+
+            self.enviarMuestraProxy()
             sleep(3)
 
     def generarSistemaCalidad(self):
@@ -55,7 +52,8 @@ class SensorHumo(Sensor, Thread):
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://localhost:5555")
 
-        alerta = Alerta(origen_sensor=self.__class__.__name__, tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.datetime.now())
+        alerta = Alerta(origen_sensor=self.__class__.__name__,
+                        tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.datetime.now())
         socket.send_pyobj(alerta)
 
         response = socket.recv_string()
@@ -68,16 +66,16 @@ class SensorHumo(Sensor, Thread):
         self.aspersor.activarAspersor()
         # Código para el método enviarMensajeAspersor
 
-    def enviarMuestraProxy(self):
-        context = zmq.Context()
-        socket = context.socket(zmq.PUSH)
-        # socket.bind("tcp://localhost:5555")
-        socket.connect("tcp://localhost:5556")
-        try:
-            socket.send_pyobj(self.muestra)
-            print("Muestra enviada al Proxy.")
-        except zmq.ZMQError as e:
-            print(f"Error al enviar la muestra: {e}")
-        finally:
-            socket.close()
-            context.term()
+    # def enviarMuestraProxy(self):
+    #     context = zmq.Context()
+    #     socket = context.socket(zmq.PUSH)
+    #     # socket.bind("tcp://localhost:5555")
+    #     socket.connect("tcp://localhost:5556")
+    #     try:
+    #         socket.send_pyobj(self.muestra)
+    #         print("Muestra enviada al Proxy.")
+    #     except zmq.ZMQError as e:
+    #         print(f"Error al enviar la muestra: {e}")
+    #     finally:
+    #         socket.close()
+    #         context.term()

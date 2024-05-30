@@ -1,3 +1,6 @@
+import zmq
+
+
 class Sensor:
 
     muestra = {
@@ -40,5 +43,18 @@ class Sensor:
                 self.pCorrecto = numeros[0]
                 self.pFueraRango = numeros[1]
                 self.pError = numeros[2]
-    
 
+    def enviarMuestraProxy(self):
+        context = zmq.Context()
+        socket = context.socket(zmq.PUSH)
+        # socket.bind("tcp://localhost:5555")
+        socket.connect("tcp://localhost:5556")
+
+        try:
+            socket.send_pyobj(self.muestra)
+            print("Muestra enviada al Proxy.")
+        except zmq.ZMQError as e:
+            print(f"Error al enviar la muestra: {e}")
+        finally:
+            socket.close()
+            context.term()
