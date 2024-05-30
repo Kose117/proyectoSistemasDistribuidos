@@ -12,6 +12,9 @@ class Cloud:
         self.sumatoriahumedad = 0
         self.minimo_humedad = 70
         self.humedadesArray = []
+        self.alertas_totales = 0
+        self.alertas_por_tipo = {}
+        self.lock = threading.Lock()
 
     def recibirAlertasProxy(self):
         context = zmq.Context()
@@ -22,6 +25,7 @@ class Cloud:
             alerta = socket.recv_pyobj()  # Recibimos directamente la instancia de Alerta
             if isinstance(alerta, Alerta):
                 self.escribirEnArchivo(alerta)
+                self.contarAlerta(alerta)
             else:
                 print("Recibido objeto no esperado:", alerta)
 
@@ -31,6 +35,19 @@ class Cloud:
         with open("Alertas.txt", "a") as file:
             file.write(
                 f"Fecha: {alerta.fecha}, Origen del sensor: {alerta.origen_sensor}, Tipo de alerta: {alerta.tipo_alerta}\n")
+
+    def contarAlerta(self, alerta):
+        with self.lock:
+            self.alertas_totales += 1
+            if alerta.tipo_alerta not in self.alertas_por_tipo:
+                self.alertas_por_tipo[alerta.tipo_alerta] = 1
+            else:
+                self.alertas_por_tipo[alerta.tipo_alerta] += 1
+
+        print("////////////////////////////////////////////////////////////")
+        print(f"Alertas totales: {self.alertas_totales}")
+        print(f"Alertas por tipo: {self.alertas_por_tipo}")
+        print("////////////////////////////////////////////////////////////")
 
     def recibirInfoProxy(self):
         context = zmq.Context()
@@ -56,7 +73,7 @@ class Cloud:
 
                 if self.humedadesArray.__len__() >= 4:
                     print(
-                        "------------------- CONDICION > 4 --------------------------")
+                        "------------------- CONDICION = 4 --------------------------")
                     print(self.humedadesArray)
                     print("----------------------------------------------------------")
                     self.sumatoriahumedad = sum(

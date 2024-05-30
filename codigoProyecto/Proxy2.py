@@ -1,5 +1,6 @@
 import datetime
 import re
+import statistics
 import threading
 from time import sleep
 import time
@@ -26,10 +27,11 @@ class Proxy:
         self.servidor: ServidorLocal = servidor
         self.temperaturas = []
         self.humedades = []
-        # Límites establecidos para los sensores
         self.TEMP_MAX = 29.4
         self.puedoEnviar = False
         self.lock = threading.Lock()
+        self.tiempos_comunicacion = []
+        self.tiempos_lock = threading.Lock()
 
     def recibirAlertasServidor(self):
         context = zmq.Context()
@@ -172,10 +174,18 @@ class Proxy:
 
         self.promedio['tipo'] = tipo
         self.promedio['valor'] = datos
-        socket.send_pyobj(self.promedio)
 
+        # Medir el tiempo de inicio
+        start_time = time.time()
+        socket.send_pyobj(self.promedio)
         response = socket.recv_string()
         print(f"Proxy: recibe '{response}' de la capa cloud")
+
+        # Medir el tiempo de fin
+        end_time = time.time()
+        tiempo_comunicacion = end_time - start_time
+        with self.tiempos_lock:
+            self.tiempos_comunicacion.append(tiempo_comunicacion)
 
         socket.close()
         context.term()
@@ -196,10 +206,17 @@ class Proxy:
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://localhost:5557")
 
+        # Medir el tiempo de inicio
+        start_time = time.time()
         socket.send_pyobj(datos)
-
         response = socket.recv_string()
         print(f"Proxy: recibe '{response}' de la capa cloud")
+
+        # Medir el tiempo de fin
+        end_time = time.time()
+        tiempo_comunicacion = end_time - start_time
+        with self.tiempos_lock:
+            self.tiempos_comunicacion.append(tiempo_comunicacion)
 
         socket.close()
 
@@ -241,6 +258,39 @@ class Proxy:
                     self.puedoEnviar = True
             time.sleep(2)
 
+    def calcular_estadisticas(self):
+        while True:
+            if self.puedoEnviar == False:
+                sleep(10)
+            else:
+                break
+
+        while True:
+            sleep(2)  # Calcular estadísticas cada 60 segundos
+            with self.tiempos_lock:
+                print("----------------------------------------------------------")
+                print(self.tiempos_comunicacion)
+                print("----------------------------------------------------------")
+                if self.tiempos_comunicacion:
+                    promedio = sum(self.tiempos_comunicacion) / \
+                        len(self.tiempos_comunicacion)
+                    desviacion_estandar = statistics.stdev(
+                        self.tiempos_comunicacion)
+                    print(
+                        Fore.CYAN + f"Tiempo promedio de comunicación: {promedio:.2f} segundos" + Style.RESET_ALL)
+                    print(
+                        Fore.CYAN + f"Desviación estándar de comunicación: {desviacion_estandar:.2f} segundos" + Style.RESET_ALL)
+
+                    self.escribirEnArchivo(promedio, desviacion_estandar)
+                else:
+                    print(
+                        Fore.CYAN + "No hay datos suficientes para calcular estadísticas." + Style.RESET_ALL)
+
+    def escribirEnArchivo(self, promedio, desviacion_estandar):
+        with open("Comunicacion.txt", "a") as file:
+            file.write(
+                f"Promedio: {promedio}, Desviación estándar: {desviacion_estandar}\n")
+
 
 def crearServidor():
     print("Creando servidor")
@@ -260,11 +310,14 @@ if __name__ == "__main__":
     hiloHealth = threading.Thread(target=proxy.health)
     hiloProxy = threading.Thread(target=proxy.recibirMuestras)
     hiloSistemaCalidad = threading.Thread(target=sistemaCalidad.EsperarAlerta)
+    hiloEstadisticas = threading.Thread(target=proxy.calcular_estadisticas)
 
     hiloProxy.start()
     hiloHealth.start()
     hiloSistemaCalidad.start()
+    hiloEstadisticas.start()
 
     hiloProxy.join()
     hiloHealth.join()
     hiloSistemaCalidad.join()
+    hiloEstadisticas.join()
