@@ -13,7 +13,7 @@ class SensorHumo(Sensor, Thread):
         Sensor.__init__(self, parametro1, parametro2)
         Thread.__init__(self) 
         self.valores_booleanos = (True, False, "Error")
-        self.aspersor = aspersor
+        self.aspersor:Aspersor = aspersor
 
     def run(self):
         while True:

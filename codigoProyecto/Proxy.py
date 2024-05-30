@@ -2,12 +2,24 @@ import datetime
 import re
 import zmq
 from Alerta import Alerta
+from datetime import datetime
+from ServidorLocal import ServidorLocal
 
 class Proxy:
+    
+    promedio = {
+        'tipo': '',
+        'valor': ''
+    }
 
-    def __init__(self):
-        print("Creando proxy")
-
+    def __init__(self, servidor):
+        print("Creando proxy") 
+        self.servidor:ServidorLocal = servidor
+        self.temperaturas = []
+        self.humedades = []
+        # Límites establecidos para los sensores
+        self.TEMP_MAX = 29.4
+        
     def recibirAlertasServidor(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
@@ -29,7 +41,12 @@ class Proxy:
                 datos = socket.recv_pyobj()
                 print("Muestra recibida en el Proxy:", datos)
                 if self.validarDatos(datos):
-                    self.enviarDatosServidor(datos)
+                    self.enviarMuestrasCloud(datos)
+                    if datos['tipo'] == "temperatura":
+                        self.temperaturas.append(datos['valor'])
+                    elif datos['tipo'] == "humedad":
+                        self.humedades.append(datos['valor'])
+                    self.pedirPromedioServidor()
                     print("Datos válidos enviados al Cloud.")
                 else:
                     self.enviarAlerta(datos)
@@ -40,21 +57,20 @@ class Proxy:
             socket.close()
             context.term()
 
-    def enviarDatosServidor(self, datos):
-        context = zmq.Context()
-        socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5558")
+    # def enviarDatosServidor(self, datos):
+    #     context = zmq.Context()
+    #     socket = context.socket(zmq.REQ)
+    #     socket.connect("tcp://localhost:5558")
 
-        socket.send_pyobj(datos)
-        print("Enviando datos servidor")
+    #     socket.send_pyobj(datos)
+    #     print("Enviando datos servidor")
 
-        response = socket.recv_string()
-        print(f"Proxy: recibe '{response}'del servidor")
+    #     response = socket.recv_string()
+    #     print(f"Proxy: recibe '{response}'del servidor")
 
-        socket.close()
-        context.term()
+    #     socket.close()
+    #     context.term()
 
-       
     def validarDatos(self, datos):
         print("Validando datos")
         if re.search("humo", datos['tipo']):
@@ -101,7 +117,7 @@ class Proxy:
         except ValueError:
             tipo_alerta = "Datos Incorrectos"
         
-        alerta = Alerta(origen_sensor=datos['tipo'], tipo_alerta=tipo_alerta, fecha=datetime.datetime.now())
+        alerta = Alerta(origen_sensor=datos['tipo'], tipo_alerta=tipo_alerta, fecha=datetime.now())
         
         try:
             context = zmq.Context()
@@ -112,38 +128,73 @@ class Proxy:
         except zmq.ZMQError as e:
             print(f"Error al enviar la alerta: {e}")
         
-       # self.enviarMensajesCloud(alerta)
-    def recibirPromedioHumedad(self):
-        context = zmq.Context()
-        socket = context.socket(zmq.PULL)
-        socket.bind("tcp://*:5561")
-        try:
-            while True:
-                promedioHumedad = socket.recv_string()
-                print("Promedio de humedad recibido en el Proxy:", promedioHumedad)
-                self.enviarMensajesCloud(promedioHumedad)
-        except zmq.ZMQError as e:
-            print(f"Error al recibir el promedio de humedad: {e}")
-        finally:
-            socket.close()
-            context.term()
+    # self.enviarMensajesCloud(alerta)
+    
+    
+    def pedirPromedioServidor(self):
+        
+        if len(self.temperaturas) >= 10:
+            promedioTemp = self.servidor.enviarPromedio(self.temperaturas)
+            print(f"Promedio de Temperatura: {promedioTemp} - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
+            promedioTemp = 35
+            if promedioTemp > self.TEMP_MAX:
+                alerta = Alerta("Promedio temperatura elevado", promedioTemp, datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                self.generarSistemaCalidad()
+                self.enviarAlerta(alerta)
+            print(f"Promedio de temperatura recibido en el Proxy: {promedioTemp}")
+            self.enviarMensajesCloud(promedioTemp, "temperatura")
+            self.temperaturas = []  # Resetear la lista para el próximo cálculo
 
-    def enviarMensajesCloud(self, datos):
+        if len(self.humedades) == 10:
+            promedioHumedad = self.servidor.enviarPromedio(self.humedades)
+            print(f"Promedio de Humedad: {promedioHumedad} - {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
+            # enviar promedio al proxy
+            print(f"Promedio de humedad recibido en el Proxy: {promedioHumedad}")
+            self.enviarMensajesCloud(promedioHumedad, "humedad")
+            self.humedades = []  # Resetear la lista para el próximo cálculo    
 
-        print("Enviando mensajes cloud")
+    def enviarMensajesCloud(self, datos, tipo):
+
+        print("Enviando promedio cloud")
         # Usando Request Reply
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
         socket.connect("tcp://localhost:5557")
 
-       # if isinstance(datos, str):
-        socket.send_string(datos)
-        #else:
-           # socket.send_pyobj(datos)
-
+        self.promedio['tipo']=tipo
+        self.promedio['valor']=datos
+        socket.send_pyobj(self.promedio)
+        
         response = socket.recv_string()
-        print(f"Proxy: recibe '{response}'de la capa cloud")
+        print(f"Proxy: recibe '{response}' de la capa cloud")
 
         socket.close()
         context.term()
+    
+    def enviarMuestrasCloud(self, datos):
         
+        print("Enviando muestras cloud")
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect("tcp://localhost:5557")
+
+        socket.send_pyobj(datos)
+        
+        response = socket.recv_string()
+        print(f"Proxy: recibe '{response}' de la capa cloud")
+
+        socket.close()
+        
+    def generarSistemaCalidad(self):
+        context = zmq.Context()
+        socket = context.socket(zmq.REQ)
+        socket.connect("tcp://localhost:5565")
+
+        alerta = Alerta(origen_sensor=self.__class__.__name__, tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.now())
+        socket.send_pyobj(alerta)
+
+        response = socket.recv_string()
+        print(f"Proxy: recibe '{response}' del sistema de calidad")
+
+        socket.close()
+        context.term()

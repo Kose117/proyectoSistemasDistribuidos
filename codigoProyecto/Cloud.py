@@ -5,6 +5,7 @@ from Alerta import Alerta
 import threading
 
 class Cloud:
+    
     def __init__(self): 
             self.sumatoriahumedad = 0
             self.minimo_humedad = 70
@@ -15,13 +16,13 @@ class Cloud:
         socket.bind("tcp://*:5560")  
         #self.socket.setsockopt_string(zmq.SUBSCRIBE, "") 
         while True:
-           alerta = socket.recv_pyobj()  # Recibimos directamente la instancia de Alerta
-           if isinstance(alerta, Alerta):
+            alerta = socket.recv_pyobj()  # Recibimos directamente la instancia de Alerta
+            if isinstance(alerta, Alerta):
                 self.escribirEnArchivo(alerta)
-           else:
+            else:
                 print("Recibido objeto no esperado:", alerta)
 
-           socket.send_string("Datos recibidos impresos")
+            socket.send_string("Datos recibidos impresos")
 
     def escribirEnArchivo(self, alerta):
         with open("Alertas.txt", "a") as file:
@@ -33,8 +34,7 @@ class Cloud:
         socket.bind("tcp://*:5557")
 
         while True :
-            message = socket.recv_string()
-            self.calcularHumedadMensual(message)
+            message = socket.recv_pyobj()
             print(f"{message}")
             
             socket.send_string("Datos recibidos impresos")

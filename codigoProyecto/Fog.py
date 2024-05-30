@@ -4,9 +4,9 @@ from SistemaCalidad import SistemaCalidad
 import threading
 class Fog:
 
-    def crearProxy():
+    def crearProxy(servidor):
         print("Creando proxy")
-        return Proxy()
+        return Proxy(servidor)
 
     def crearServidor():
         print("Creando servidor")
@@ -15,24 +15,19 @@ class Fog:
 
     def crearSistemaCalidad():
         print("Creando sistema de calidad")
-        return SistemaCalidad()
+        return SistemaCalidad("5565")
 
     if __name__ == "__main__":
         print("Creando fog")
-        proxy = crearProxy()
         servidor = crearServidor()
+        sistemaCalidad = crearSistemaCalidad()
+        proxy = crearProxy(servidor)
         hiloProxy = threading.Thread(target= proxy.recibirMuestras)
-        hiloServ = threading.Thread(target= servidor.recibirDatos)
-        hiloProxyAlerta = threading.Thread(target= proxy.recibirAlertasServidor)
-        hiloProxyProm = threading.Thread(target= proxy.recibirPromedioHumedad)
+        hiloSistemaCalidad = threading.Thread(target=sistemaCalidad.EsperarAlerta)
 
         print("Creando hilos")
         hiloProxy.start()
-        hiloServ.start()
-        hiloProxyAlerta.start()
-        hiloProxyProm.start()
+        hiloSistemaCalidad.start()
         
         hiloProxy.join()
-        hiloServ.join()
-        hiloProxyAlerta.join()
-        hiloProxyProm.join()
+        hiloSistemaCalidad.join()
