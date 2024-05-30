@@ -3,11 +3,15 @@ import re
 import threading
 from time import sleep
 import time
+from colorama import Fore, Style
 import zmq
 from Alerta import Alerta
 from datetime import datetime
 from ServidorLocal import ServidorLocal
 from SistemaCalidad import SistemaCalidad
+
+contador_mensajes_cloud = 0
+contador_lock_cloud = threading.Lock()
 
 
 class Proxy:
@@ -117,6 +121,12 @@ class Proxy:
             socket.connect("tcp://localhost:5560")
             socket.send_pyobj(alerta)
             print("Alerta enviada al Cloud.")
+
+            global contador_mensajes_cloud
+            with contador_lock_cloud:
+                contador_mensajes_cloud += 1
+                print(
+                    Fore.BLUE + f"Total de mensajes enviados al cloud: {contador_mensajes_cloud}" + Style.RESET_ALL)
         except zmq.ZMQError as e:
             print(f"Error al enviar la alerta: {e}")
 
@@ -170,6 +180,12 @@ class Proxy:
         socket.close()
         context.term()
 
+        global contador_mensajes_cloud
+        with contador_lock_cloud:
+            contador_mensajes_cloud += 1
+            print(
+                Fore.BLUE + f"Total de mensajes enviados al cloud: {contador_mensajes_cloud}" + Style.RESET_ALL)
+
     def enviarMuestrasCloud(self, datos):
         with self.lock:
             if self.puedoEnviar == False:
@@ -186,6 +202,12 @@ class Proxy:
         print(f"Proxy: recibe '{response}' de la capa cloud")
 
         socket.close()
+
+        global contador_mensajes_cloud
+        with contador_lock_cloud:
+            contador_mensajes_cloud += 1
+            print(
+                Fore.BLUE + f"Total de mensajes enviados al cloud: {contador_mensajes_cloud}" + Style.RESET_ALL)
 
     def generarSistemaCalidad(self):
         context = zmq.Context()

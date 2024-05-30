@@ -1,4 +1,10 @@
+from colorama import Fore, Style
 import zmq
+import threading
+
+# Contador global y bloqueo
+contador_mensajes = 0
+contador_lock = threading.Lock()
 
 
 class Sensor:
@@ -16,14 +22,10 @@ class Sensor:
         self.pFueraRango: float = -1
         self.pError: float = -1
         self.PUERTO_PROXY = 5556
-
         self.leerArchivo()
 
     def tomarMuestra(self):
         print("Muestra de humo tomada")
-
-    def enviarMuestraProxy(self):
-        print("Muestra de humo enviada")
 
     def leerArchivo(self):
         # Abrir el archivo para lectura ('r')
@@ -54,6 +56,14 @@ class Sensor:
         try:
             socket.send_pyobj(self.muestra)
             print("Muestra enviada al Proxy.")
+            # Incrementar el contador de mensajes
+            global contador_mensajes
+            with contador_lock:
+                contador_mensajes += 1
+                # Imprimir el contador de mensajes en amarillo
+                if (contador_mensajes % 30 == 0):
+                    print(
+                        Fore.YELLOW + f"Mensajes enviados hasta ahora: {contador_mensajes}" + Style.RESET_ALL)
         except zmq.ZMQError as e:
             print(f"Error al enviar la muestra: {e}")
         finally:
