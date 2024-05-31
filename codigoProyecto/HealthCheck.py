@@ -40,11 +40,9 @@ def manejarPrincipal():
             with lock:
                 PrincipalActivo = True
                 context = zmq.Context()
-                socket = context.socket(zmq.REQ)
+                socket = context.socket(zmq.PUSH)
                 socket.connect("tcp://10.43.101.24:5590")
                 socket.send_string("10.43.103.83")
-                resp = socket.recv_string()
-                print(f"mensaje del sensor: {resp}")
 
             time.sleep(5)
         except zmq.error.Again:
@@ -62,11 +60,9 @@ def manejarPrincipal():
                 with lock:
                     PrincipalActivo = False
                     context = zmq.Context()
-                    socket = context.socket(zmq.REQ)
+                    socket = context.socket(zmq.PUSH)
                     socket.connect("tcp://10.43.101.24:5590")
                     socket.send_string("10.43.100.67")
-                    resp = socket.recv_string()
-                    print(f"mensaje del sensor: {resp}")
 
                 result = receiver.recv()
                 print("PING RECIBIDO: {result}")
