@@ -84,6 +84,5 @@ class Sensor:
             nueva_ip = socket.recv_string()
             print("Nueva ip:", nueva_ip)
             self.ip_proxy = nueva_ip
-            socket.send_string("OK Cambio ip")
 
         

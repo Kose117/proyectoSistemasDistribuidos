@@ -24,6 +24,7 @@ class SensorTemperatura(Sensor):
 
         hiloProxy.join()
         hiloCambiarIp.join()
+        
 
     def tomarMuestra(self):
         self.inicializado.wait()
