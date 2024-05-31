@@ -27,6 +27,7 @@ class Sensor:
         self.pError: float = -1
         self.PUERTO_PROXY = 5556
         self.leerArchivo()
+        threading.Thread(target=self.actualizar_ip_proxy).start()
 
     def tomarMuestra(self):
         print("Muestra de humo tomada")
@@ -76,11 +77,11 @@ class Sensor:
 
     
     def actualizar_ip_proxy(self):
+        context = zmq.Context()
+        socket = context.socket(zmq.PULL)
+        socket.connect("tcp://10.43.101.24:5590")
+        
         while True:
-
-            socket = context.socket(zmq.PULL)
-            socket.bind("tcp://10.43.101.24:5590")
-            
             nueva_ip = socket.recv_string()
             print("Nueva ip:", nueva_ip)
             self.ip_proxy = nueva_ip

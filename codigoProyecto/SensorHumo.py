@@ -17,14 +17,15 @@ class SensorHumo(Sensor, Thread):
         self.aspersor: Aspersor = aspersor
 
     def run(self):
-        hiloProxy = threading.Thread(target=self.tomarMuestra)
-        hiloCambiarIp = threading.Thread(target=self.actualizar_ip_proxy)
+        # hiloProxy = threading.Thread(target=self.tomarMuestra)
+        # hiloCambiarIp = threading.Thread(target=self.actualizar_ip_proxy)
         
-        hiloProxy.start()
-        hiloCambiarIp.start()
+        # hiloProxy.start()
+        # hiloCambiarIp.start()
 
-        hiloProxy.join()
-        hiloCambiarIp.join()
+        # hiloProxy.join()
+        # hiloCambiarIp.join()
+        self.tomarMuestra()
 
     def tomarMuestra(self):
         while True:
