@@ -76,8 +76,9 @@ class Sensor:
 
     
     def actualizar_ip_proxy(self):
-        socket = context.socket(zmq.REP)
+        socket = context.socket(zmq.PULL)
         socket.bind("tcp://10.43.101.24:5590")
+        
 
         
         nueva_ip = socket.recv_string()
