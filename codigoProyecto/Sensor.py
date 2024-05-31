@@ -51,7 +51,7 @@ class Sensor:
         context = zmq.Context()
         socket = context.socket(zmq.PUSH)
         # socket.bind("tcp://localhost:5555")
-        socket.connect("tcp://10.43.101.24:5556")
+        socket.connect("tcp://10.43.103.83:5556")
 
         try:
             socket.send_pyobj(self.muestra)
