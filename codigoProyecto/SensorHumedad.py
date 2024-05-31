@@ -16,10 +16,14 @@ class SensorHumedad(Sensor, Thread):
         self.inicializado.set()
 
     def run(self):
-        while True:
-            self.tomarMuestra()
-            # sleep(5)
-            sleep(20)
+        hiloProxy = threading.Thread(target=self.tomarMuestra)
+        hiloCambiarIp = threading.Thread(target=self.actualizar_ip_proxy)
+        
+        hiloProxy.start()
+        hiloCambiarIp.start()
+
+        hiloProxy.join()
+        hiloCambiarIp.join()
 
     def tomarMuestra(self):
         self.inicializado.wait()

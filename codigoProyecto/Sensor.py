@@ -1,9 +1,11 @@
+from multiprocessing import context
 from colorama import Fore, Style
 import zmq
 import threading
 
 # Contador global y bloqueo
 contador_mensajes = 0
+ip = "10.43.103.83"
 contador_lock = threading.Lock()
 
 
@@ -14,6 +16,8 @@ class Sensor:
         'valor': '',
         'tiempo': ''
     }
+
+    ip_proxy = ip
 
     def __init__(self, parametro1, parametro2):
         self.tipo: str = parametro1
@@ -51,7 +55,7 @@ class Sensor:
         context = zmq.Context()
         socket = context.socket(zmq.PUSH)
         # socket.bind("tcp://localhost:5555")
-        socket.connect("tcp://10.43.103.83:5556")
+        socket.connect(f"tcp://{self.ip_proxy}:5556")
 
         try:
             socket.send_pyobj(self.muestra)
@@ -69,3 +73,16 @@ class Sensor:
         finally:
             socket.close()
             context.term()
+
+    
+    def actualizar_ip_proxy(self):
+        socket = context.socket(zmq.REP)
+        socket.bind("tcp://10.43.101.24:5590")
+
+        
+        nueva_ip = socket.recv_string()
+        print("Nueva ip:", nueva_ip)
+        self.ip_proxy = nueva_ip
+        socket.send_string("OK Cambio ip")
+
+        
