@@ -76,13 +76,14 @@ class Sensor:
 
     
     def actualizar_ip_proxy(self):
-        socket = context.socket(zmq.REP)
-        socket.bind("tcp://10.43.101.24:5590")
+        while True:
+            socket = context.socket(zmq.REP)
+            socket.bind("tcp://10.43.101.24:5590")
 
-        
-        nueva_ip = socket.recv_string()
-        print("Nueva ip:", nueva_ip)
-        self.ip_proxy = nueva_ip
-        socket.send_string("OK Cambio ip")
+            
+            nueva_ip = socket.recv_string()
+            print("Nueva ip:", nueva_ip)
+            self.ip_proxy = nueva_ip
+            socket.send_string("OK Cambio ip")
 
         
