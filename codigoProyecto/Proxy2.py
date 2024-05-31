@@ -36,7 +36,7 @@ class Proxy:
     def recibirAlertasServidor(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://10.43.103.83:5559")
+        socket.bind("tcp://10.43.100.67:5559")
 
         while True:
             alert = socket.recv_pyobj()
@@ -229,7 +229,7 @@ class Proxy:
     def generarSistemaCalidad(self):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://10.43.103.83:5565")
+        socket.connect("tcp://10.43.100.67:5565")
 
         alerta = Alerta(origen_sensor=self.__class__.__name__,
                         tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.now())
