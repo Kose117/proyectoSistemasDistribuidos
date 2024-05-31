@@ -36,7 +36,7 @@ class Proxy:
     def recibirAlertasServidor(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:5559")
+        socket.bind("tcp://10.43.101.86:5559")
 
         while True:
             alert = socket.recv_pyobj()
@@ -54,7 +54,7 @@ class Proxy:
 
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
-        socket.bind("tcp://*:5556")
+        socket.bind("tcp://10.43.101.24:5556")#cambiar a ip de sensor
         try:
             while True:
                 datos = socket.recv_pyobj()
@@ -120,7 +120,7 @@ class Proxy:
         try:
             context = zmq.Context()
             socket = context.socket(zmq.REQ)
-            socket.connect("tcp://localhost:5560")
+            socket.connect("tcp://10.43.100.174:5560")#cambiar a ip de cloud
             socket.send_pyobj(alerta)
             print("Alerta enviada al Cloud.")
 
@@ -170,7 +170,7 @@ class Proxy:
         # Usando Request Reply
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5566")
+        socket.connect("tcp://10.43.100.174:5566")#camiar a ip del cloud
 
         self.promedio['tipo'] = tipo
         self.promedio['valor'] = datos
@@ -204,7 +204,7 @@ class Proxy:
         print("Enviando muestras cloud")
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5557")
+        socket.connect("tcp://10.43.100.174:5557")#cambiar a ip de cloud
 
         # Medir el tiempo de inicio
         start_time = time.time()
@@ -229,7 +229,7 @@ class Proxy:
     def generarSistemaCalidad(self):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5565")
+        socket.connect("tcp://10.43.101.86:5565")
 
         alerta = Alerta(origen_sensor=self.__class__.__name__,
                         tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.now())
@@ -245,7 +245,7 @@ class Proxy:
         context = zmq.Context()
         sender = context.socket(zmq.REQ)
         sender.connect(
-            f"tcp://localhost:5570")
+            f"tcp://10.43.100.67:5570")
         while True:
             sender.send_string("HI PROXY 2")
             resp = sender.recv_string()
