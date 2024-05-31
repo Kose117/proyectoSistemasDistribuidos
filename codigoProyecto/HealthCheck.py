@@ -16,7 +16,7 @@ def manejarPrincipal():
     # para primera respuesta del fog
     receiver = context.socket(zmq.REP)
     receiver.bind(
-        f"tcp://localhost:5568"
+        f"tcp://localhost:5591"
     )
     result = receiver.recv()
     print("PING RECIBIDO: {result}")
@@ -26,7 +26,7 @@ def manejarPrincipal():
     # request al principal
     sender = context.socket(zmq.REQ)
     sender.connect(
-        f"tcp://localhost:5569"
+        f"tcp://localhost:5590"
     )
 
     # Establecer un timeout de recepción de 5000 milisegundos (5 segundos)

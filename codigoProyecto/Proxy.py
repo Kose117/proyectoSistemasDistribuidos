@@ -229,13 +229,13 @@ class Proxy:
         context = zmq.Context()
         sender = context.socket(zmq.REQ)
         sender.connect(
-            f"tcp://localhost:5568")
+            f"tcp://localhost:5591")
         sender.send_string("Hello :)")
         sender.recv_string()
 
         receiver = context.socket(zmq.REP)
         receiver.bind(
-            f"tcp://localhost:5569")
+            f"tcp://localhost:5590")
 
         while True:
             receiver.recv_string()
