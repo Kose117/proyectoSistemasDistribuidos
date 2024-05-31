@@ -19,7 +19,7 @@ class Cloud:
     def recibirAlertasProxy(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:5560")
+        socket.bind("tcp://10.43.100.174:5560")
         # self.socket.setsockopt_string(zmq.SUBSCRIBE, "")
         while True:
             alerta = socket.recv_pyobj()  # Recibimos directamente la instancia de Alerta
@@ -52,7 +52,7 @@ class Cloud:
     def recibirInfoProxy(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:5557")
+        socket.bind("tcp://*:5557")#cambiar a ip proxy
         while True:
             message = socket.recv_pyobj()
             print(f"{message}")
@@ -61,7 +61,7 @@ class Cloud:
     def recibirPromedios(self):
         context = zmq.Context()
         socket = context.socket(zmq.REP)
-        socket.bind("tcp://*:5566")
+        socket.bind("tcp://10.43.100.174:5566")
         while True:
             message = socket.recv_pyobj()
             print(f"{message}")
@@ -92,7 +92,7 @@ class Cloud:
     def generarSistemaCalidad(self, alerta):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5567")
+        socket.connect("tcp://10.43.100.174:5567")
         socket.send_pyobj(alerta)
 
         response = socket.recv_string()
