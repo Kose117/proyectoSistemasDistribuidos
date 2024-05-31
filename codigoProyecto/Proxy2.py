@@ -54,7 +54,7 @@ class Proxy:
 
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
-        socket.bind("tcp://10.43.103.83:5556")#cambiar a ip de sensor
+        socket.bind("tcp://10.43.100.67:5556")#cambiar a ip de sensor
         try:
             while True:
                 datos = socket.recv_pyobj()
