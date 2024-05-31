@@ -46,7 +46,7 @@ class Proxy:
     def recibirMuestras(self):
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
-        socket.bind("tcp://*:5556")
+        socket.bind("tcp://10.43.101.86:5556")
         try:
             while True:
                 datos = socket.recv_pyobj()
@@ -108,7 +108,7 @@ class Proxy:
         try:
             context = zmq.Context()
             socket = context.socket(zmq.REQ)
-            socket.connect("tcp://localhost:5560")
+            socket.connect("tcp://10.43.103.83:5560")
             socket.send_pyobj(alerta)
             print("Alerta enviada al Cloud.")
 
@@ -155,7 +155,7 @@ class Proxy:
         print("Enviando promedio cloud")
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5566")
+        socket.connect("tcp://10.43.103.83:5566")
 
         self.promedio['tipo'] = tipo
         self.promedio['valor'] = datos
@@ -187,7 +187,7 @@ class Proxy:
         print("Enviando muestras cloud")
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5557")
+        socket.connect("tcp://10.43.103.83:5557")
 
         # Medir el tiempo de inicio
         start_time = time.time()

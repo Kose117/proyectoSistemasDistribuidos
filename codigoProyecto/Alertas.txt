@@ -560,3 +560,20 @@ Fecha: 2024-05-30 17:49:54.690621, Origen del sensor: humo, Tipo de alerta: Dato
 Fecha: 2024-05-30 17:49:54.697715, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
 Fecha: 2024-05-30 17:49:57.373147, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
 Fecha: 2024-05-30 17:49:57.381242, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.388624, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.443528, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.467467, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.496877, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.518617, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.535891, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:09.560412, Origen del sensor: temperatura, Tipo de alerta: Alerta: temperatura fuera de rango
+Fecha: 2024-05-31 12:12:09.588072, Origen del sensor: temperatura, Tipo de alerta: Alerta: temperatura fuera de rango
+Fecha: 2024-05-31 12:12:09.598914, Origen del sensor: temperatura, Tipo de alerta: Alerta: temperatura fuera de rango
+Fecha: 2024-05-31 12:12:09.613330, Origen del sensor: temperatura, Tipo de alerta: Alerta: temperatura fuera de rango
+Fecha: 2024-05-31 12:12:15.035818, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:15.048401, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:15.061405, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:15.104317, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:15.446410, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:15.739524, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
+Fecha: 2024-05-31 12:12:21.510371, Origen del sensor: humo, Tipo de alerta: Datos Incorrectos
