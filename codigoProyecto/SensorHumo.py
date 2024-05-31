@@ -50,7 +50,7 @@ class SensorHumo(Sensor, Thread):
     def generarSistemaCalidad(self):
         context = zmq.Context()
         socket = context.socket(zmq.REQ)
-        socket.connect("tcp://localhost:5555")
+        socket.connect("tcp://10.43.101.24:5555")
 
         alerta = Alerta(origen_sensor=self.__class__.__name__,
                         tipo_alerta="Alerta: Sistema de Calidad", fecha=datetime.datetime.now())
