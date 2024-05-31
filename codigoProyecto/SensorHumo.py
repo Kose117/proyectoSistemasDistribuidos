@@ -1,5 +1,6 @@
 import datetime
 import random
+import threading
 from Sensor import Sensor
 from time import sleep
 from Aspersor import Aspersor
@@ -16,9 +17,14 @@ class SensorHumo(Sensor, Thread):
         self.aspersor: Aspersor = aspersor
 
     def run(self):
-        while True:
-            self.tomarMuestra()
-            # sleep(3)
+        hiloProxy = threading.Thread(target=self.tomarMuestra)
+        hiloCambiarIp = threading.Thread(target=self.actualizar_ip_proxy)
+        
+        hiloProxy.start()
+        hiloCambiarIp.start()
+
+        hiloProxy.join()
+        hiloCambiarIp.join()
 
     def tomarMuestra(self):
         while True:
